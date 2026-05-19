@@ -1,0 +1,41 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Configuration Lanternator",
+        "description": "Configurez une automatisation de lanterne de porche avec contrôle de luminosité ambiante.",
+        "data": {
+          "relay": "Interrupteur relais",
+          "light": "Ampoule connectée",
+          "lux_sensor": "Capteur de luminosité",
+          "override": "Forçage manuel (input_boolean)",
+          "lux_threshold": "Seuil de luminosité (lux)",
+          "debounce_seconds": "Temps anti-rebond (secondes)",
+          "polling_minutes": "Intervalle de vérification (minutes)",
+          "brightness": "Luminosité (1-255, optionnel)",
+          "color_temp": "Température de couleur (mireds, optionnel)",
+          "rgb_color_r": "RGB Rouge (0-255, optionnel)",
+          "rgb_color_g": "RGB Vert (0-255, optionnel)",
+          "rgb_color_b": "RGB Bleu (0-255, optionnel)"
+        },
+        "data_description": {
+          "relay": "L'interrupteur qui alimente l'ampoule connectée.",
+          "light": "L'ampoule connectée gérée par cette automatisation.",
+          "lux_sensor": "Un capteur fournissant la luminosité ambiante en lux.",
+          "override": "Quand activé, l'automatisation est désactivée.",
+          "lux_threshold": "Niveau de lux en dessous duquel la lumière doit s'allumer (hystérésis ±5 appliquée automatiquement).",
+          "debounce_seconds": "Durée pendant laquelle la condition de lux doit persister avant d'agir.",
+          "polling_minutes": "Intervalle de vérification de sécurité pour vérifier et restaurer l'état souhaité.",
+          "brightness": "Optionnel : luminosité fixe à l'allumage.",
+          "color_temp": "Optionnel : température de couleur fixe en mireds.",
+          "rgb_color_r": "Optionnel : canal rouge pour la couleur RGB.",
+          "rgb_color_g": "Optionnel : canal vert pour la couleur RGB.",
+          "rgb_color_b": "Optionnel : canal bleu pour la couleur RGB."
+        }
+      }
+    },
+    "abort": {
+      "already_configured": "Ce relais est déjà configuré."
+    }
+  }
+}

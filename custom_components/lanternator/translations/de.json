@@ -1,0 +1,41 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Lanternator Einrichtung",
+        "description": "Konfigurieren Sie eine Veranda-Laternen-Automatisierung mit Umgebungslichtsteuerung.",
+        "data": {
+          "relay": "Relais-Schalter",
+          "light": "Smarte Glühbirne",
+          "lux_sensor": "Helligkeitssensor",
+          "override": "Manuelle Übersteuerung (input_boolean)",
+          "lux_threshold": "Helligkeitsschwelle (Lux)",
+          "debounce_seconds": "Entprellzeit (Sekunden)",
+          "polling_minutes": "Abfrageintervall (Minuten)",
+          "brightness": "Helligkeit (1-255, optional)",
+          "color_temp": "Farbtemperatur (Mireds, optional)",
+          "rgb_color_r": "RGB Rot (0-255, optional)",
+          "rgb_color_g": "RGB Grün (0-255, optional)",
+          "rgb_color_b": "RGB Blau (0-255, optional)"
+        },
+        "data_description": {
+          "relay": "Der Schalter, der die smarte Glühbirne mit Strom versorgt.",
+          "light": "Die smarte Glühbirne, die von dieser Automatisierung gesteuert wird.",
+          "lux_sensor": "Ein Sensor, der die Umgebungshelligkeit in Lux misst.",
+          "override": "Wenn aktiviert, ist die Automatisierung deaktiviert.",
+          "lux_threshold": "Lux-Wert, unter dem das Licht eingeschaltet wird (Hysterese ±5 wird automatisch angewendet).",
+          "debounce_seconds": "Wie lange die Lux-Bedingung bestehen muss, bevor reagiert wird.",
+          "polling_minutes": "Sicherheitsabfrageintervall zur Überprüfung und Wiederherstellung des gewünschten Zustands.",
+          "brightness": "Optional: feste Helligkeit beim Einschalten.",
+          "color_temp": "Optional: feste Farbtemperatur in Mireds.",
+          "rgb_color_r": "Optional: Rotkanal für RGB-Farbe.",
+          "rgb_color_g": "Optional: Grünkanal für RGB-Farbe.",
+          "rgb_color_b": "Optional: Blaukanal für RGB-Farbe."
+        }
+      }
+    },
+    "abort": {
+      "already_configured": "Dieses Relais ist bereits konfiguriert."
+    }
+  }
+}

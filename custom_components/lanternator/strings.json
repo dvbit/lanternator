@@ -1,0 +1,41 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Lanternator Setup",
+        "description": "Configure a porch lantern automation with ambient light control.",
+        "data": {
+          "relay": "Relay switch",
+          "light": "Smart bulb",
+          "lux_sensor": "Lux sensor",
+          "override": "Override toggle (input_boolean)",
+          "lux_threshold": "Lux threshold",
+          "debounce_seconds": "Debounce time (seconds)",
+          "polling_minutes": "Polling interval (minutes)",
+          "brightness": "Brightness (1-255, optional)",
+          "color_temp": "Color temperature (mireds, optional)",
+          "rgb_color_r": "RGB Red (0-255, optional)",
+          "rgb_color_g": "RGB Green (0-255, optional)",
+          "rgb_color_b": "RGB Blue (0-255, optional)"
+        },
+        "data_description": {
+          "relay": "The switch entity controlling power to the smart bulb.",
+          "light": "The smart bulb entity managed by this automation.",
+          "lux_sensor": "A sensor providing ambient light readings in lux.",
+          "override": "When ON, the automation is disabled.",
+          "lux_threshold": "Lux level below which the light should be ON (hysteresis ±5 applied automatically).",
+          "debounce_seconds": "How long the lux condition must persist before acting.",
+          "polling_minutes": "Safety polling interval to verify and restore the desired state.",
+          "brightness": "Optional: fixed brightness when turning on the bulb.",
+          "color_temp": "Optional: fixed color temperature in mireds.",
+          "rgb_color_r": "Optional: red channel for RGB color.",
+          "rgb_color_g": "Optional: green channel for RGB color.",
+          "rgb_color_b": "Optional: blue channel for RGB color."
+        }
+      }
+    },
+    "abort": {
+      "already_configured": "This relay is already configured."
+    }
+  }
+}

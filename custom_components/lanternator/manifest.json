@@ -1,0 +1,11 @@
+{
+  "domain": "lanternator",
+  "name": "Lanternator",
+  "codeowners": ["@dvbit"],
+  "config_flow": true,
+  "documentation": "https://github.com/dvbit/lanternator",
+  "integration_type": "hub",
+  "iot_class": "local_push",
+  "issue_tracker": "https://github.com/dvbit/lanternator/issues",
+  "version": "1.0.0"
+}

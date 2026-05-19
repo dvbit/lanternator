@@ -1,0 +1,41 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Configuración de Lanternator",
+        "description": "Configura una automatización de farol de porche con control de luz ambiental.",
+        "data": {
+          "relay": "Interruptor relé",
+          "light": "Bombilla inteligente",
+          "lux_sensor": "Sensor de luminosidad",
+          "override": "Anulación manual (input_boolean)",
+          "lux_threshold": "Umbral de luminosidad (lux)",
+          "debounce_seconds": "Tiempo antirrebote (segundos)",
+          "polling_minutes": "Intervalo de verificación (minutos)",
+          "brightness": "Brillo (1-255, opcional)",
+          "color_temp": "Temperatura de color (mireds, opcional)",
+          "rgb_color_r": "RGB Rojo (0-255, opcional)",
+          "rgb_color_g": "RGB Verde (0-255, opcional)",
+          "rgb_color_b": "RGB Azul (0-255, opcional)"
+        },
+        "data_description": {
+          "relay": "El interruptor que alimenta la bombilla inteligente.",
+          "light": "La bombilla inteligente gestionada por esta automatización.",
+          "lux_sensor": "Un sensor que proporciona la luminosidad ambiental en lux.",
+          "override": "Cuando está activado, la automatización está deshabilitada.",
+          "lux_threshold": "Nivel de lux por debajo del cual la luz debe encenderse (histéresis ±5 aplicada automáticamente).",
+          "debounce_seconds": "Cuánto tiempo debe persistir la condición de lux antes de actuar.",
+          "polling_minutes": "Intervalo de verificación de seguridad para verificar y restaurar el estado deseado.",
+          "brightness": "Opcional: brillo fijo al encender.",
+          "color_temp": "Opcional: temperatura de color fija en mireds.",
+          "rgb_color_r": "Opcional: canal rojo para color RGB.",
+          "rgb_color_g": "Opcional: canal verde para color RGB.",
+          "rgb_color_b": "Opcional: canal azul para color RGB."
+        }
+      }
+    },
+    "abort": {
+      "already_configured": "Este relé ya está configurado."
+    }
+  }
+}

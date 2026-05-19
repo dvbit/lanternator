@@ -1,0 +1,41 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Configurazione Lanternator",
+        "description": "Configura un'automazione lanterna portico con controllo luce ambientale.",
+        "data": {
+          "relay": "Interruttore relay",
+          "light": "Lampadina smart",
+          "lux_sensor": "Sensore lux",
+          "override": "Override (input_boolean)",
+          "lux_threshold": "Soglia lux",
+          "debounce_seconds": "Tempo debounce (secondi)",
+          "polling_minutes": "Intervallo polling (minuti)",
+          "brightness": "Luminosità (1-255, opzionale)",
+          "color_temp": "Temperatura colore (mireds, opzionale)",
+          "rgb_color_r": "RGB Rosso (0-255, opzionale)",
+          "rgb_color_g": "RGB Verde (0-255, opzionale)",
+          "rgb_color_b": "RGB Blu (0-255, opzionale)"
+        },
+        "data_description": {
+          "relay": "L'interruttore che alimenta la lampadina smart.",
+          "light": "La lampadina smart gestita da questa automazione.",
+          "lux_sensor": "Un sensore che fornisce la luminosità ambientale in lux.",
+          "override": "Quando attivo, l'automazione è disabilitata.",
+          "lux_threshold": "Livello lux sotto il quale la luce deve accendersi (isteresi ±5 applicata automaticamente).",
+          "debounce_seconds": "Per quanto tempo la condizione lux deve persistere prima di agire.",
+          "polling_minutes": "Intervallo di polling di sicurezza per verificare e ripristinare lo stato desiderato.",
+          "brightness": "Opzionale: luminosità fissa all'accensione.",
+          "color_temp": "Opzionale: temperatura colore fissa in mireds.",
+          "rgb_color_r": "Opzionale: canale rosso per colore RGB.",
+          "rgb_color_g": "Opzionale: canale verde per colore RGB.",
+          "rgb_color_b": "Opzionale: canale blu per colore RGB."
+        }
+      }
+    },
+    "abort": {
+      "already_configured": "Questo relay è già configurato."
+    }
+  }
+}
