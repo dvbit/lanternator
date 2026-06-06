@@ -5,7 +5,7 @@
         "title": "Lanternator Einrichtung",
         "description": "Konfigurieren Sie eine Veranda-Laternen-Automatisierung mit Umgebungslichtsteuerung.",
         "data": {
-          "relay": "Relais-Schalter",
+          "relay": "Relais-Schalter (optional)",
           "light": "Smarte Glühbirne",
           "lux_sensor": "Helligkeitssensor",
           "override": "Manuelle Übersteuerung (input_boolean)",
@@ -19,7 +19,7 @@
           "rgb_color_b": "RGB Blau (0-255, optional)"
         },
         "data_description": {
-          "relay": "Der Schalter, der die smarte Glühbirne mit Strom versorgt.",
+          "relay": "Optional: der Schalter, der die smarte Glühbirne mit Strom versorgt. Leer lassen, wenn kein Relais verwendet wird.",
           "light": "Die smarte Glühbirne, die von dieser Automatisierung gesteuert wird.",
           "lux_sensor": "Ein Sensor, der die Umgebungshelligkeit in Lux misst.",
           "override": "Wenn aktiviert, ist die Automatisierung deaktiviert.",

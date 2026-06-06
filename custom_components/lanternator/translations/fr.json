@@ -5,7 +5,7 @@
         "title": "Configuration Lanternator",
         "description": "Configurez une automatisation de lanterne de porche avec contrôle de luminosité ambiante.",
         "data": {
-          "relay": "Interrupteur relais",
+          "relay": "Interrupteur relais (optionnel)",
           "light": "Ampoule connectée",
           "lux_sensor": "Capteur de luminosité",
           "override": "Forçage manuel (input_boolean)",
@@ -19,7 +19,7 @@
           "rgb_color_b": "RGB Bleu (0-255, optionnel)"
         },
         "data_description": {
-          "relay": "L'interrupteur qui alimente l'ampoule connectée.",
+          "relay": "Optionnel : l'interrupteur qui alimente l'ampoule connectée. Laisser vide si aucun relais n'est utilisé.",
           "light": "L'ampoule connectée gérée par cette automatisation.",
           "lux_sensor": "Un capteur fournissant la luminosité ambiante en lux.",
           "override": "Quand activé, l'automatisation est désactivée.",

@@ -5,7 +5,7 @@
         "title": "Configuración de Lanternator",
         "description": "Configura una automatización de farol de porche con control de luz ambiental.",
         "data": {
-          "relay": "Interruptor relé",
+          "relay": "Interruptor relé (opcional)",
           "light": "Bombilla inteligente",
           "lux_sensor": "Sensor de luminosidad",
           "override": "Anulación manual (input_boolean)",
@@ -19,7 +19,7 @@
           "rgb_color_b": "RGB Azul (0-255, opcional)"
         },
         "data_description": {
-          "relay": "El interruptor que alimenta la bombilla inteligente.",
+          "relay": "Opcional: el interruptor que alimenta la bombilla inteligente. Dejar vacío si no se usa un relé.",
           "light": "La bombilla inteligente gestionada por esta automatización.",
           "lux_sensor": "Un sensor que proporciona la luminosidad ambiental en lux.",
           "override": "Cuando está activado, la automatización está deshabilitada.",

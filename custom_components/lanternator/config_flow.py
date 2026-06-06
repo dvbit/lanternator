@@ -1,7 +1,8 @@
 """
 Lanternator – Config Flow
-REQ: Config flow UI con tutti i parametri. Campi opzionali per brightness,
-     color_temp, rgb_color. Istanziabile più volte per più lanterne.
+REQ: Config flow UI con tutti i parametri. Relay opzionale.
+     Campi opzionali per brightness, color_temp, rgb_color.
+     Istanziabile più volte per più lanterne.
 """
 
 from __future__ import annotations
@@ -39,23 +40,25 @@ class LanternatorConfigFlow(ConfigFlow, domain=DOMAIN):
     async def async_step_user(
         self, user_input: dict | None = None
     ) -> dict:
-        """REQ: Step unico con tutti i parametri."""
+        """REQ: Step unico con tutti i parametri. Relay opzionale."""
         if user_input is not None:
-            # Usa il relay entity_id come unique_id per evitare duplicati
-            await self.async_set_unique_id(user_input[CONF_RELAY])
+            # REQ: Unique ID basato su relay (se presente) o lampadina
+            unique_key = user_input.get(CONF_RELAY) or user_input[CONF_LIGHT]
+            await self.async_set_unique_id(unique_key)
             self._abort_if_unique_id_configured()
 
-            # Titolo leggibile dall'entity_id del relay
-            title = user_input[CONF_RELAY].split(".")[-1].replace("_", " ").title()
+            # Titolo leggibile dall'entity_id principale
+            title = unique_key.split(".")[-1].replace("_", " ").title()
             return self.async_create_entry(title=title, data=user_input)
 
-        # REQ: Schema con parametri obbligatori e opzionali
+        # REQ: Schema — relay opzionale, lampadina obbligatoria
         data_schema = vol.Schema(
             {
-                # --- Entità obbligatorie ---
-                vol.Required(CONF_RELAY): selector.EntitySelector(
+                # --- REQ: Relay opzionale (se assente, solo lampadina smart) ---
+                vol.Optional(CONF_RELAY): selector.EntitySelector(
                     selector.EntitySelectorConfig(domain="switch")
                 ),
+                # --- Entità obbligatorie ---
                 vol.Required(CONF_LIGHT): selector.EntitySelector(
                     selector.EntitySelectorConfig(domain="light")
                 ),
@@ -87,7 +90,7 @@ class LanternatorConfigFlow(ConfigFlow, domain=DOMAIN):
                         min=1, max=60, step=1, mode="box"
                     )
                 ),
-                # --- Parametri lampadina opzionali (REQ: brightness, color_temp, rgb) ---
+                # --- Parametri lampadina opzionali ---
                 vol.Optional(CONF_BRIGHTNESS): selector.NumberSelector(
                     selector.NumberSelectorConfig(
                         min=1, max=255, step=1, mode="slider"

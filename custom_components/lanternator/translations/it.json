@@ -5,7 +5,7 @@
         "title": "Configurazione Lanternator",
         "description": "Configura un'automazione lanterna portico con controllo luce ambientale.",
         "data": {
-          "relay": "Interruttore relay",
+          "relay": "Interruttore relay (opzionale)",
           "light": "Lampadina smart",
           "lux_sensor": "Sensore lux",
           "override": "Override (input_boolean)",
@@ -19,7 +19,7 @@
           "rgb_color_b": "RGB Blu (0-255, opzionale)"
         },
         "data_description": {
-          "relay": "L'interruttore che alimenta la lampadina smart.",
+          "relay": "Opzionale: l'interruttore che alimenta la lampadina smart. Lascia vuoto se non usi un relay.",
           "light": "La lampadina smart gestita da questa automazione.",
           "lux_sensor": "Un sensore che fornisce la luminosità ambientale in lux.",
           "override": "Quando attivo, l'automazione è disabilitata.",

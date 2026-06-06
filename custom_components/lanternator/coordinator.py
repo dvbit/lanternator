@@ -2,8 +2,10 @@
 Lanternator – Coordinator
 REQ: Logica centrale che gestisce stato desiderato, debounce lux,
      ripristino immediato, polling di sicurezza, override.
+     Relay opzionale: se assente, gestisce solo la lampadina smart.
+     Quando la lampadina passa da unavailable ad available, applica
+     lo stato desiderato in base alla soglia lux.
      Espone DeviceInfo per raggruppare le entità sotto un device.
-     Espone metodi per aggiornare parametri a runtime dalle entità number.
 """
 
 from __future__ import annotations
@@ -49,13 +51,13 @@ _LOGGER = logging.getLogger(__name__)
 
 class LanternatorCoordinator(DataUpdateCoordinator):
     """
-    REQ: Coordinator che gestisce una singola coppia relay/lampadina.
+    REQ: Coordinator che gestisce una singola coppia relay/lampadina
+    (o solo lampadina se relay assente).
     - Calcola stato desiderato in base ai lux con isteresi e debounce
     - Ripristina immediatamente se stato attuale diverge
+    - Quando la lampadina torna available, applica stato desiderato
     - Polling periodico come rete di sicurezza
     - Override disabilita ogni intervento
-    - Espone DeviceInfo per raggruppare tutte le entità
-    - Espone metodi per aggiornare parametri a runtime
     """
 
     def __init__(
@@ -65,7 +67,8 @@ class LanternatorCoordinator(DataUpdateCoordinator):
         self.config_entry = config_entry
         config = dict(config_entry.data)
 
-        self._relay: str = config[CONF_RELAY]
+        # REQ: Relay opzionale — None se non configurato
+        self._relay: str | None = config.get(CONF_RELAY) or None
         self._light: str = config[CONF_LIGHT]
         self._lux_sensor: str = config[CONF_LUX_SENSOR]
         self._override: str = config[CONF_OVERRIDE]
@@ -101,7 +104,7 @@ class LanternatorCoordinator(DataUpdateCoordinator):
         super().__init__(
             hass,
             _LOGGER,
-            name=f"{DOMAIN}_{self._relay}",
+            name=f"{DOMAIN}_{self._relay or self._light}",
             # REQ: Polling periodico ogni polling_minuti come rete di sicurezza
             update_interval=timedelta(minutes=self._polling_minutes),
         )
@@ -118,12 +121,12 @@ class LanternatorCoordinator(DataUpdateCoordinator):
             name=self.config_entry.title,
             manufacturer="Lanternator",
             model="Porch Light Controller",
-            sw_version="1.1.0",
+            sw_version="1.2.0",
             configuration_url="https://github.com/dvbit/lanternator",
         )
 
     # ------------------------------------------------------------------
-    # Public properties for sensor entities
+    # Public properties for sensor/number entities
     # ------------------------------------------------------------------
 
     @property
@@ -138,61 +141,55 @@ class LanternatorCoordinator(DataUpdateCoordinator):
 
     @property
     def threshold(self) -> float:
-        """Soglia lux corrente."""
         return self._threshold
 
     @property
     def debounce(self) -> int:
-        """Debounce corrente in secondi."""
         return self._debounce
 
     @property
     def polling_minutes(self) -> int:
-        """Intervallo polling corrente in minuti."""
         return self._polling_minutes
 
     @property
     def brightness(self) -> int | None:
-        """Brightness corrente."""
         return self._brightness
 
     @property
     def color_temp(self) -> int | None:
-        """Color temperature corrente."""
         return self._color_temp
 
     @property
     def rgb_r(self) -> int | None:
-        """RGB Red corrente."""
         return self._rgb_color[0] if self._rgb_color else None
 
     @property
     def rgb_g(self) -> int | None:
-        """RGB Green corrente."""
         return self._rgb_color[1] if self._rgb_color else None
 
     @property
     def rgb_b(self) -> int | None:
-        """RGB Blue corrente."""
         return self._rgb_color[2] if self._rgb_color else None
 
+    @property
+    def has_relay(self) -> bool:
+        """True se un relay è configurato."""
+        return self._relay is not None
+
     # ------------------------------------------------------------------
-    # Runtime parameter updates (REQ: configurabili da UI via number)
+    # Runtime parameter updates
     # ------------------------------------------------------------------
 
     async def async_update_parameter(self, key: str, value: Any) -> None:
         """
         REQ: Aggiorna un parametro a runtime e persisti nella config entry.
-        Chiamato dalle entità number quando l'utente modifica un valore.
         """
-        # Aggiorna il valore interno
         if key == CONF_LUX_THRESHOLD:
             self._threshold = float(value)
         elif key == CONF_DEBOUNCE_SECONDS:
             self._debounce = int(value)
         elif key == CONF_POLLING_MINUTES:
             self._polling_minutes = int(value)
-            # REQ: Aggiorna anche l'intervallo di polling del coordinator
             self.update_interval = timedelta(minutes=self._polling_minutes)
         elif key == CONF_BRIGHTNESS:
             self._brightness = int(value) if value is not None else None
@@ -211,16 +208,13 @@ class LanternatorCoordinator(DataUpdateCoordinator):
                 self._rgb_color = [0, 0, 0]
             self._rgb_color[2] = int(value)
 
-        # Persisti nella config entry
         new_data = dict(self.config_entry.data)
         new_data[key] = value
         self.hass.config_entries.async_update_entry(
             self.config_entry, data=new_data
         )
-
         _LOGGER.info("Lanternator parameter %s updated to %s", key, value)
 
-        # Rivaluta stato se il parametro lux è cambiato
         if key == CONF_LUX_THRESHOLD:
             await self._evaluate_lux_immediate()
 
@@ -229,7 +223,7 @@ class LanternatorCoordinator(DataUpdateCoordinator):
     # ------------------------------------------------------------------
 
     async def async_start(self) -> None:
-        """REQ: Registra listener su relay, lampadina, sensore lux, override."""
+        """REQ: Registra listener su relay (se presente), lampadina, sensore lux, override."""
 
         # REQ trigger 1: Cambio valore del sensore lux
         self._unsub_listeners.append(
@@ -238,17 +232,19 @@ class LanternatorCoordinator(DataUpdateCoordinator):
             )
         )
 
-        # REQ trigger 2: Cambio stato del relay
-        self._unsub_listeners.append(
-            async_track_state_change_event(
-                self.hass, self._relay, self._handle_device_change
+        # REQ trigger 2: Cambio stato del relay (solo se configurato)
+        if self._relay is not None:
+            self._unsub_listeners.append(
+                async_track_state_change_event(
+                    self.hass, self._relay, self._handle_device_change
+                )
             )
-        )
 
         # REQ trigger 3: Cambio stato della lampadina
+        # Gestisce sia cambio on/off sia transizione unavailable→available
         self._unsub_listeners.append(
             async_track_state_change_event(
-                self.hass, self._light, self._handle_device_change
+                self.hass, self._light, self._handle_light_change
             )
         )
 
@@ -263,7 +259,9 @@ class LanternatorCoordinator(DataUpdateCoordinator):
         await self._evaluate_lux_immediate()
 
         _LOGGER.info(
-            "Lanternator started for relay=%s light=%s", self._relay, self._light
+            "Lanternator started for relay=%s light=%s",
+            self._relay or "(none)",
+            self._light,
         )
 
     async def async_stop(self) -> None:
@@ -284,11 +282,7 @@ class LanternatorCoordinator(DataUpdateCoordinator):
         """
         if self._is_override_on():
             return
-
-        # REQ: Il polling non bypassa il debounce, rivaluta come un cambio lux
         self._evaluate_lux_with_debounce()
-
-        # Verifica coerenza stato attuale vs desiderato
         await self._enforce_desired_state()
 
     # ------------------------------------------------------------------
@@ -305,37 +299,71 @@ class LanternatorCoordinator(DataUpdateCoordinator):
     @callback
     def _handle_device_change(self, event: Event) -> None:
         """
-        REQ trigger 2/3: Cambio stato relay o lampadina.
+        REQ trigger 2: Cambio stato relay.
         Se diverge dallo stato desiderato, ripristina immediatamente.
         """
-        if self._is_override_on():
+        if self._is_override_on() or self._acting:
             return
 
-        # REQ: Ignora cambi causati dalle nostre stesse azioni
-        if self._acting:
-            return
-
-        # REQ: Ignora transizioni verso unavailable/unknown (non sono azioni utente)
         new_state: State | None = event.data.get("new_state")
         if new_state is None or new_state.state in (STATE_UNAVAILABLE, STATE_UNKNOWN):
             return
 
-        # REQ: Ripristino immediato (senza debounce)
+        self.hass.async_create_task(self._enforce_desired_state())
+
+    @callback
+    def _handle_light_change(self, event: Event) -> None:
+        """
+        REQ trigger 3: Cambio stato lampadina.
+        Gestisce due scenari:
+        1. Cambio on/off utente → ripristino immediato se diverge
+        2. Transizione unavailable→available → applica stato desiderato
+           (REQ: riaccensione alimentazione lampadina smart senza relay)
+        """
+        if self._is_override_on():
+            return
+
+        old_state: State | None = event.data.get("old_state")
+        new_state: State | None = event.data.get("new_state")
+        if new_state is None:
+            return
+
+        # REQ: Transizione unavailable/unknown → available (qualsiasi stato on/off)
+        # La lampadina è tornata raggiungibile → applica stato desiderato
+        old_is_unavail = (
+            old_state is None
+            or old_state.state in (STATE_UNAVAILABLE, STATE_UNKNOWN)
+        )
+        new_is_avail = new_state.state not in (STATE_UNAVAILABLE, STATE_UNKNOWN)
+
+        if old_is_unavail and new_is_avail:
+            _LOGGER.info(
+                "Lanternator: light %s became available — enforcing desired state",
+                self._light,
+            )
+            self.hass.async_create_task(self._enforce_desired_state())
+            return
+
+        # Ignora transizioni verso unavailable (non è azione utente)
+        if not new_is_avail:
+            return
+
+        # Ignora cambi causati dalle nostre stesse azioni
+        if self._acting:
+            return
+
+        # REQ: Cambio on/off utente → ripristino immediato
         self.hass.async_create_task(self._enforce_desired_state())
 
     @callback
     def _handle_override_change(self, event: Event) -> None:
-        """
-        REQ: Quando override torna a OFF, rivaluta immediatamente
-             (senza debounce) e ripristina.
-        """
+        """REQ: Quando override torna a OFF, rivaluta immediatamente."""
         new_state: State | None = event.data.get("new_state")
         if new_state is None:
             return
 
         if new_state.state == STATE_OFF:
             _LOGGER.info("Lanternator override OFF — immediate re-evaluation")
-            # REQ: Override OFF → rivalutazione immediata senza debounce
             self.hass.async_create_task(self._evaluate_lux_immediate())
 
     # ------------------------------------------------------------------
@@ -366,7 +394,6 @@ class LanternatorCoordinator(DataUpdateCoordinator):
             return DESIRED_ON
         if lux > threshold_high:
             return DESIRED_OFF
-        # REQ: Fascia morta — mantenere stato corrente, non agire
         return None
 
     @callback
@@ -382,16 +409,13 @@ class LanternatorCoordinator(DataUpdateCoordinator):
 
         new_desired = self._compute_desired_from_lux(lux)
         if new_desired is None:
-            # REQ: Fascia morta — cancella eventuale debounce pendente
             self._cancel_debounce()
             return
 
         if new_desired == self._desired_state:
-            # Già nello stato desiderato corretto, cancella debounce
             self._cancel_debounce()
             return
 
-        # REQ: Nuova zona diversa dallo stato desiderato → avvia/riavvia debounce
         self._cancel_debounce()
         _LOGGER.debug(
             "Lanternator debounce started: lux=%.1f → desired=%s (wait %ds)",
@@ -409,16 +433,12 @@ class LanternatorCoordinator(DataUpdateCoordinator):
         """Crea callback per quando il debounce scade."""
 
         async def _debounce_expired(_now) -> None:
-            """
-            REQ: Timer scade → verifica che la condizione sia ancora valida,
-                 aggiorna stato desiderato, esegui azione.
-            """
+            """REQ: Timer scade → verifica condizione, aggiorna e applica."""
             self._debounce_cancel = None
             lux = self._get_current_lux()
             if lux is None:
                 return
 
-            # Ricontrolla che la condizione sia ancora valida
             confirmed = self._compute_desired_from_lux(lux)
             if confirmed != candidate:
                 _LOGGER.debug(
@@ -440,10 +460,7 @@ class LanternatorCoordinator(DataUpdateCoordinator):
         return _debounce_expired
 
     async def _evaluate_lux_immediate(self) -> None:
-        """
-        REQ: Valutazione immediata (usata all'avvio e quando override torna OFF).
-        Nessun debounce.
-        """
+        """REQ: Valutazione immediata (avvio, override OFF, cambio soglia)."""
         self._cancel_debounce()
         lux = self._get_current_lux()
         if lux is None:
@@ -491,59 +508,69 @@ class LanternatorCoordinator(DataUpdateCoordinator):
     async def _enforce_on(self) -> None:
         """
         REQ: Stato desiderato ACCESO.
-        - Relay deve essere ON
-        - Lampadina deve essere ON (con brightness/color_temp/rgb se configurati)
+        Con relay: relay ON → attendi lampadina → lampadina ON
+        Senza relay: lampadina ON (se available)
         """
-        relay_state = self.hass.states.get(self._relay)
+        # REQ: Gestisci relay solo se configurato
+        if self._relay is not None:
+            relay_state = self.hass.states.get(self._relay)
+            if relay_state is None or relay_state.state != STATE_ON:
+                _LOGGER.info("Lanternator: turning relay ON (%s)", self._relay)
+                await self.hass.services.async_call(
+                    "switch", "turn_on", {"entity_id": self._relay}, blocking=True
+                )
+                await self._wait_for_light_available()
 
-        # REQ: Se relay è OFF → accendere il relay
-        if relay_state is None or relay_state.state != STATE_ON:
-            _LOGGER.info("Lanternator: turning relay ON (%s)", self._relay)
-            await self.hass.services.async_call(
-                "switch", "turn_on", {"entity_id": self._relay}, blocking=True
-            )
-            # REQ: Attendere che la lampadina diventi disponibile (timeout 10s)
-            await self._wait_for_light_available()
-
-        # REQ: Se la lampadina è OFF → comandare la lampadina su ON
+        # REQ: Lampadina ON — solo se available
         light_state = self.hass.states.get(self._light)
-        if light_state is None or light_state.state != STATE_ON:
+        if light_state is None or light_state.state in (
+            STATE_UNAVAILABLE, STATE_UNKNOWN
+        ):
+            _LOGGER.debug(
+                "Lanternator: light %s not available, skipping ON command",
+                self._light,
+            )
+            return
+
+        if light_state.state != STATE_ON:
             _LOGGER.info("Lanternator: turning light ON (%s)", self._light)
             await self._turn_on_light()
 
     async def _enforce_off(self) -> None:
         """
-        REQ: Stato desiderato SPENTO — relay ON, lampadina OFF.
-        Il relay deve restare sempre acceso per mantenere la lampadina raggiungibile.
+        REQ: Stato desiderato SPENTO.
+        Con relay: relay ON (keep alive), lampadina OFF
+        Senza relay: lampadina OFF (se available)
         """
-        relay_state = self.hass.states.get(self._relay)
+        # REQ: Con relay → mantieni relay acceso per raggiungibilità lampadina
+        if self._relay is not None:
+            relay_state = self.hass.states.get(self._relay)
+            if relay_state is None or relay_state.state != STATE_ON:
+                _LOGGER.info(
+                    "Lanternator: turning relay ON (keep alive) (%s)", self._relay
+                )
+                await self.hass.services.async_call(
+                    "switch", "turn_on", {"entity_id": self._relay}, blocking=True
+                )
+                await self._wait_for_light_available()
 
-        # REQ: Se relay è OFF → riaccendi (relay sempre ON)
-        if relay_state is None or relay_state.state != STATE_ON:
-            _LOGGER.info(
-                "Lanternator: turning relay ON (keep alive) (%s)", self._relay
-            )
-            await self.hass.services.async_call(
-                "switch", "turn_on", {"entity_id": self._relay}, blocking=True
-            )
-            await self._wait_for_light_available()
-
-        # REQ: Se la lampadina è ON → spegni
+        # REQ: Lampadina OFF — solo se available e accesa
         light_state = self.hass.states.get(self._light)
-        if light_state is not None and light_state.state == STATE_ON:
+        if light_state is None or light_state.state in (
+            STATE_UNAVAILABLE, STATE_UNKNOWN
+        ):
+            return
+
+        if light_state.state == STATE_ON:
             _LOGGER.info("Lanternator: turning light OFF (%s)", self._light)
             await self.hass.services.async_call(
                 "light", "turn_off", {"entity_id": self._light}, blocking=True
             )
 
     async def _turn_on_light(self) -> None:
-        """
-        REQ: Accende la lampadina applicando i parametri opzionali
-        (brightness, color_temp, rgb_color) se configurati.
-        """
+        """REQ: Accende la lampadina con parametri opzionali."""
         service_data: dict[str, Any] = {"entity_id": self._light}
 
-        # REQ: Parametri opzionali lampadina
         if self._brightness is not None:
             service_data["brightness"] = self._brightness
         if self._color_temp is not None:
@@ -556,15 +583,11 @@ class LanternatorCoordinator(DataUpdateCoordinator):
         )
 
     async def _wait_for_light_available(self) -> None:
-        """
-        REQ: Attende che la lampadina diventi disponibile dopo l'accensione del relay.
-        Timeout di BULB_AVAILABILITY_TIMEOUT secondi.
-        """
-        for _ in range(BULB_AVAILABILITY_TIMEOUT * 2):  # check ogni 0.5s
+        """REQ: Attende che la lampadina diventi disponibile (timeout 10s)."""
+        for _ in range(BULB_AVAILABILITY_TIMEOUT * 2):
             state = self.hass.states.get(self._light)
             if state is not None and state.state not in (
-                STATE_UNAVAILABLE,
-                STATE_UNKNOWN,
+                STATE_UNAVAILABLE, STATE_UNKNOWN,
             ):
                 return
             await asyncio.sleep(0.5)

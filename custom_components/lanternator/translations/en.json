@@ -5,7 +5,7 @@
         "title": "Lanternator Setup",
         "description": "Configure a porch lantern automation with ambient light control.",
         "data": {
-          "relay": "Relay switch",
+          "relay": "Relay switch (optional)",
           "light": "Smart bulb",
           "lux_sensor": "Lux sensor",
           "override": "Override toggle (input_boolean)",
@@ -19,7 +19,7 @@
           "rgb_color_b": "RGB Blue (0-255, optional)"
         },
         "data_description": {
-          "relay": "The switch entity controlling power to the smart bulb.",
+          "relay": "Optional: the switch entity controlling power to the smart bulb. Leave empty if no relay is used.",
           "light": "The smart bulb entity managed by this automation.",
           "lux_sensor": "A sensor providing ambient light readings in lux.",
           "override": "When ON, the automation is disabled.",
