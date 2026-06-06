@@ -37,5 +37,41 @@
     "abort": {
       "already_configured": "Este relé ya está configurado."
     }
+  },
+  "entity": {
+    "sensor": {
+      "desired_state": {
+        "name": "Estado deseado"
+      },
+      "current_lux": {
+        "name": "Lux actual"
+      }
+    },
+    "number": {
+      "lux_threshold": {
+        "name": "Umbral de luminosidad"
+      },
+      "debounce_time": {
+        "name": "Tiempo antirrebote"
+      },
+      "polling_interval": {
+        "name": "Intervalo de verificación"
+      },
+      "brightness": {
+        "name": "Brillo"
+      },
+      "color_temperature": {
+        "name": "Temperatura de color"
+      },
+      "rgb_red": {
+        "name": "RGB Rojo"
+      },
+      "rgb_green": {
+        "name": "RGB Verde"
+      },
+      "rgb_blue": {
+        "name": "RGB Azul"
+      }
+    }
   }
 }

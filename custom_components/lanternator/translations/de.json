@@ -37,5 +37,41 @@
     "abort": {
       "already_configured": "Dieses Relais ist bereits konfiguriert."
     }
+  },
+  "entity": {
+    "sensor": {
+      "desired_state": {
+        "name": "Gewünschter Zustand"
+      },
+      "current_lux": {
+        "name": "Aktueller Lux-Wert"
+      }
+    },
+    "number": {
+      "lux_threshold": {
+        "name": "Helligkeitsschwelle"
+      },
+      "debounce_time": {
+        "name": "Entprellzeit"
+      },
+      "polling_interval": {
+        "name": "Abfrageintervall"
+      },
+      "brightness": {
+        "name": "Helligkeit"
+      },
+      "color_temperature": {
+        "name": "Farbtemperatur"
+      },
+      "rgb_red": {
+        "name": "RGB Rot"
+      },
+      "rgb_green": {
+        "name": "RGB Grün"
+      },
+      "rgb_blue": {
+        "name": "RGB Blau"
+      }
+    }
   }
 }

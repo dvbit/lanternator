@@ -37,5 +37,41 @@
     "abort": {
       "already_configured": "This relay is already configured."
     }
+  },
+  "entity": {
+    "sensor": {
+      "desired_state": {
+        "name": "Desired state"
+      },
+      "current_lux": {
+        "name": "Current lux"
+      }
+    },
+    "number": {
+      "lux_threshold": {
+        "name": "Lux threshold"
+      },
+      "debounce_time": {
+        "name": "Debounce time"
+      },
+      "polling_interval": {
+        "name": "Polling interval"
+      },
+      "brightness": {
+        "name": "Brightness"
+      },
+      "color_temperature": {
+        "name": "Color temperature"
+      },
+      "rgb_red": {
+        "name": "RGB Red"
+      },
+      "rgb_green": {
+        "name": "RGB Green"
+      },
+      "rgb_blue": {
+        "name": "RGB Blue"
+      }
+    }
   }
 }

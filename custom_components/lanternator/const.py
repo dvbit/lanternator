@@ -1,9 +1,12 @@
 """
 Lanternator – Constants
-REQ: Centralised keys, defaults and fixed hysteresis value.
+REQ: Centralised keys, defaults, fixed hysteresis value, and platform list.
 """
 
 DOMAIN = "lanternator"
+
+# --- Platforms to forward ---
+PLATFORMS: list[str] = ["sensor", "number"]
 
 # --- Config keys (REQ: parametri di input) ---
 CONF_RELAY = "relay"

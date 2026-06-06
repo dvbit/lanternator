@@ -2,6 +2,8 @@
 Lanternator – Coordinator
 REQ: Logica centrale che gestisce stato desiderato, debounce lux,
      ripristino immediato, polling di sicurezza, override.
+     Espone DeviceInfo per raggruppare le entità sotto un device.
+     Espone metodi per aggiornare parametri a runtime dalle entità number.
 """
 
 from __future__ import annotations
@@ -11,8 +13,10 @@ import logging
 from datetime import timedelta
 from typing import Any
 
+from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import STATE_ON, STATE_OFF, STATE_UNAVAILABLE, STATE_UNKNOWN
 from homeassistant.core import HomeAssistant, callback, Event, State
+from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.event import (
     async_track_state_change_event,
     async_call_later,
@@ -50,17 +54,24 @@ class LanternatorCoordinator(DataUpdateCoordinator):
     - Ripristina immediatamente se stato attuale diverge
     - Polling periodico come rete di sicurezza
     - Override disabilita ogni intervento
+    - Espone DeviceInfo per raggruppare tutte le entità
+    - Espone metodi per aggiornare parametri a runtime
     """
 
-    def __init__(self, hass: HomeAssistant, config: dict[str, Any]) -> None:
+    def __init__(
+        self, hass: HomeAssistant, config_entry: ConfigEntry
+    ) -> None:
         """Inizializza con i parametri dalla config entry."""
+        self.config_entry = config_entry
+        config = dict(config_entry.data)
+
         self._relay: str = config[CONF_RELAY]
         self._light: str = config[CONF_LIGHT]
         self._lux_sensor: str = config[CONF_LUX_SENSOR]
         self._override: str = config[CONF_OVERRIDE]
         self._threshold: float = config[CONF_LUX_THRESHOLD]
         self._debounce: int = config[CONF_DEBOUNCE_SECONDS]
-        polling: int = config[CONF_POLLING_MINUTES]
+        self._polling_minutes: int = config[CONF_POLLING_MINUTES]
 
         # REQ: Parametri opzionali lampadina (brightness, color_temp, rgb)
         self._brightness: int | None = config.get(CONF_BRIGHTNESS)
@@ -92,8 +103,126 @@ class LanternatorCoordinator(DataUpdateCoordinator):
             _LOGGER,
             name=f"{DOMAIN}_{self._relay}",
             # REQ: Polling periodico ogni polling_minuti come rete di sicurezza
-            update_interval=timedelta(minutes=polling),
+            update_interval=timedelta(minutes=self._polling_minutes),
         )
+
+    # ------------------------------------------------------------------
+    # Device info (REQ: device che riunisce tutti i parametri)
+    # ------------------------------------------------------------------
+
+    @property
+    def device_info(self) -> DeviceInfo:
+        """REQ: DeviceInfo per raggruppare tutte le entità sotto un device."""
+        return DeviceInfo(
+            identifiers={(DOMAIN, self.config_entry.entry_id)},
+            name=self.config_entry.title,
+            manufacturer="Lanternator",
+            model="Porch Light Controller",
+            sw_version="1.0.0",
+            configuration_url="https://github.com/dvbit/lanternator",
+        )
+
+    # ------------------------------------------------------------------
+    # Public properties for sensor entities
+    # ------------------------------------------------------------------
+
+    @property
+    def desired_state(self) -> str:
+        """REQ: Stato desiderato corrente (on/off/unknown)."""
+        return self._desired_state
+
+    @property
+    def current_lux(self) -> float | None:
+        """REQ: Valore lux corrente dal sensore."""
+        return self._get_current_lux()
+
+    @property
+    def threshold(self) -> float:
+        """Soglia lux corrente."""
+        return self._threshold
+
+    @property
+    def debounce(self) -> int:
+        """Debounce corrente in secondi."""
+        return self._debounce
+
+    @property
+    def polling_minutes(self) -> int:
+        """Intervallo polling corrente in minuti."""
+        return self._polling_minutes
+
+    @property
+    def brightness(self) -> int | None:
+        """Brightness corrente."""
+        return self._brightness
+
+    @property
+    def color_temp(self) -> int | None:
+        """Color temperature corrente."""
+        return self._color_temp
+
+    @property
+    def rgb_r(self) -> int | None:
+        """RGB Red corrente."""
+        return self._rgb_color[0] if self._rgb_color else None
+
+    @property
+    def rgb_g(self) -> int | None:
+        """RGB Green corrente."""
+        return self._rgb_color[1] if self._rgb_color else None
+
+    @property
+    def rgb_b(self) -> int | None:
+        """RGB Blue corrente."""
+        return self._rgb_color[2] if self._rgb_color else None
+
+    # ------------------------------------------------------------------
+    # Runtime parameter updates (REQ: configurabili da UI via number)
+    # ------------------------------------------------------------------
+
+    async def async_update_parameter(self, key: str, value: Any) -> None:
+        """
+        REQ: Aggiorna un parametro a runtime e persisti nella config entry.
+        Chiamato dalle entità number quando l'utente modifica un valore.
+        """
+        # Aggiorna il valore interno
+        if key == CONF_LUX_THRESHOLD:
+            self._threshold = float(value)
+        elif key == CONF_DEBOUNCE_SECONDS:
+            self._debounce = int(value)
+        elif key == CONF_POLLING_MINUTES:
+            self._polling_minutes = int(value)
+            # REQ: Aggiorna anche l'intervallo di polling del coordinator
+            self.update_interval = timedelta(minutes=self._polling_minutes)
+        elif key == CONF_BRIGHTNESS:
+            self._brightness = int(value) if value is not None else None
+        elif key == CONF_COLOR_TEMP:
+            self._color_temp = int(value) if value is not None else None
+        elif key == CONF_RGB_COLOR_R:
+            if self._rgb_color is None:
+                self._rgb_color = [0, 0, 0]
+            self._rgb_color[0] = int(value)
+        elif key == CONF_RGB_COLOR_G:
+            if self._rgb_color is None:
+                self._rgb_color = [0, 0, 0]
+            self._rgb_color[1] = int(value)
+        elif key == CONF_RGB_COLOR_B:
+            if self._rgb_color is None:
+                self._rgb_color = [0, 0, 0]
+            self._rgb_color[2] = int(value)
+
+        # Persisti nella config entry
+        new_data = dict(self.config_entry.data)
+        new_data[key] = value
+        self.hass.config_entries.async_update_entry(
+            self.config_entry, data=new_data
+        )
+
+        _LOGGER.info("Lanternator parameter %s updated to %s", key, value)
+
+        # Rivaluta stato se il parametro lux è cambiato
+        if key == CONF_LUX_THRESHOLD:
+            await self._evaluate_lux_immediate()
 
     # ------------------------------------------------------------------
     # Setup & teardown

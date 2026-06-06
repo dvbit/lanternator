@@ -37,5 +37,41 @@
     "abort": {
       "already_configured": "Ce relais est déjà configuré."
     }
+  },
+  "entity": {
+    "sensor": {
+      "desired_state": {
+        "name": "État souhaité"
+      },
+      "current_lux": {
+        "name": "Lux actuel"
+      }
+    },
+    "number": {
+      "lux_threshold": {
+        "name": "Seuil de luminosité"
+      },
+      "debounce_time": {
+        "name": "Temps anti-rebond"
+      },
+      "polling_interval": {
+        "name": "Intervalle de vérification"
+      },
+      "brightness": {
+        "name": "Luminosité"
+      },
+      "color_temperature": {
+        "name": "Température de couleur"
+      },
+      "rgb_red": {
+        "name": "RGB Rouge"
+      },
+      "rgb_green": {
+        "name": "RGB Vert"
+      },
+      "rgb_blue": {
+        "name": "RGB Bleu"
+      }
+    }
   }
 }
