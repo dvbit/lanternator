@@ -8,20 +8,7 @@
           "light": "Smarte Glühbirne",
           "lux_sensor": "Helligkeitssensor",
           "override": "Manuelle Übersteuerung (input_boolean)",
-          "use_relay": "Relais-Schalter verwenden?"
-        },
-        "data_description": {
-          "light": "Die smarte Glühbirne, die von dieser Automatisierung gesteuert wird.",
-          "lux_sensor": "Ein Sensor, der die Umgebungshelligkeit in Lux misst.",
-          "override": "Wenn aktiviert, ist die Automatisierung deaktiviert.",
-          "use_relay": "Aktivieren, wenn ein Relais die Stromversorgung der smarten Glühbirne steuert."
-        }
-      },
-      "params": {
-        "title": "Parameter",
-        "description": "Konfigurieren Sie Schwellenwerte, Zeiten und optionale Glühbirneneinstellungen.",
-        "data": {
-          "relay": "Relais-Schalter",
+          "relay": "Relais-Schalter (optional)",
           "lux_threshold": "Helligkeitsschwelle (Lux)",
           "debounce_seconds": "Entprellzeit (Sekunden)",
           "polling_minutes": "Abfrageintervall (Minuten)",
@@ -32,10 +19,13 @@
           "rgb_color_b": "RGB Blau (0-255, optional)"
         },
         "data_description": {
-          "relay": "Der Schalter, der die smarte Glühbirne mit Strom versorgt.",
-          "lux_threshold": "Lux-Wert, unter dem das Licht eingeschaltet wird (Hysterese ±5 wird automatisch angewendet).",
+          "light": "Die smarte Glühbirne, die von dieser Automatisierung gesteuert wird.",
+          "lux_sensor": "Ein Sensor, der die Umgebungshelligkeit in Lux misst.",
+          "override": "Wenn aktiviert, ist die Automatisierung deaktiviert.",
+          "relay": "Optional: der Schalter, der die Glühbirne mit Strom versorgt. Leer lassen, wenn kein Relais verwendet wird.",
+          "lux_threshold": "Lux-Wert, unter dem das Licht eingeschaltet wird (Hysterese ±5).",
           "debounce_seconds": "Wie lange die Lux-Bedingung bestehen muss, bevor reagiert wird.",
-          "polling_minutes": "Sicherheitsabfrageintervall zur Überprüfung und Wiederherstellung des gewünschten Zustands.",
+          "polling_minutes": "Sicherheitsabfrageintervall.",
           "brightness": "Optional: feste Helligkeit beim Einschalten.",
           "color_temp": "Optional: feste Farbtemperatur in Mireds.",
           "rgb_color_r": "Optional: Rotkanal für RGB-Farbe.",

@@ -8,20 +8,7 @@
           "light": "Ampoule connectée",
           "lux_sensor": "Capteur de luminosité",
           "override": "Forçage manuel (input_boolean)",
-          "use_relay": "Utiliser un interrupteur relais ?"
-        },
-        "data_description": {
-          "light": "L'ampoule connectée gérée par cette automatisation.",
-          "lux_sensor": "Un capteur fournissant la luminosité ambiante en lux.",
-          "override": "Quand activé, l'automatisation est désactivée.",
-          "use_relay": "Activer si un relais contrôle l'alimentation de l'ampoule connectée."
-        }
-      },
-      "params": {
-        "title": "Paramètres",
-        "description": "Configurez les seuils, les délais et les réglages optionnels de l'ampoule.",
-        "data": {
-          "relay": "Interrupteur relais",
+          "relay": "Interrupteur relais (optionnel)",
           "lux_threshold": "Seuil de luminosité (lux)",
           "debounce_seconds": "Temps anti-rebond (secondes)",
           "polling_minutes": "Intervalle de vérification (minutes)",
@@ -32,10 +19,13 @@
           "rgb_color_b": "RGB Bleu (0-255, optionnel)"
         },
         "data_description": {
-          "relay": "L'interrupteur qui alimente l'ampoule connectée.",
-          "lux_threshold": "Niveau de lux en dessous duquel la lumière doit s'allumer (hystérésis ±5 appliquée automatiquement).",
+          "light": "L'ampoule connectée gérée par cette automatisation.",
+          "lux_sensor": "Un capteur fournissant la luminosité ambiante en lux.",
+          "override": "Quand activé, l'automatisation est désactivée.",
+          "relay": "Optionnel : l'interrupteur qui alimente l'ampoule. Laisser vide si aucun relais n'est utilisé.",
+          "lux_threshold": "Niveau de lux en dessous duquel la lumière doit s'allumer (hystérésis ±5).",
           "debounce_seconds": "Durée pendant laquelle la condition de lux doit persister avant d'agir.",
-          "polling_minutes": "Intervalle de vérification de sécurité pour vérifier et restaurer l'état souhaité.",
+          "polling_minutes": "Intervalle de vérification de sécurité.",
           "brightness": "Optionnel : luminosité fixe à l'allumage.",
           "color_temp": "Optionnel : température de couleur fixe en mireds.",
           "rgb_color_r": "Optionnel : canal rouge pour la couleur RGB.",
