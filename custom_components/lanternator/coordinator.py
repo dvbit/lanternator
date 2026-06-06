@@ -118,7 +118,7 @@ class LanternatorCoordinator(DataUpdateCoordinator):
             name=self.config_entry.title,
             manufacturer="Lanternator",
             model="Porch Light Controller",
-            sw_version="1.0.0",
+            sw_version="1.1.0",
             configuration_url="https://github.com/dvbit/lanternator",
         )
 
