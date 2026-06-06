@@ -5,10 +5,23 @@
         "title": "Lanternator Setup",
         "description": "Configure a porch lantern automation with ambient light control.",
         "data": {
-          "relay": "Relay switch (optional)",
           "light": "Smart bulb",
           "lux_sensor": "Lux sensor",
           "override": "Override toggle (input_boolean)",
+          "use_relay": "Use a relay switch?"
+        },
+        "data_description": {
+          "light": "The smart bulb entity managed by this automation.",
+          "lux_sensor": "A sensor providing ambient light readings in lux.",
+          "override": "When ON, the automation is disabled.",
+          "use_relay": "Enable if a relay controls power to the smart bulb."
+        }
+      },
+      "params": {
+        "title": "Parameters",
+        "description": "Configure thresholds, timing, and optional bulb settings.",
+        "data": {
+          "relay": "Relay switch",
           "lux_threshold": "Lux threshold",
           "debounce_seconds": "Debounce time (seconds)",
           "polling_minutes": "Polling interval (minutes)",
@@ -19,10 +32,7 @@
           "rgb_color_b": "RGB Blue (0-255, optional)"
         },
         "data_description": {
-          "relay": "Optional: the switch entity controlling power to the smart bulb. Leave empty if no relay is used.",
-          "light": "The smart bulb entity managed by this automation.",
-          "lux_sensor": "A sensor providing ambient light readings in lux.",
-          "override": "When ON, the automation is disabled.",
+          "relay": "The switch entity controlling power to the smart bulb.",
           "lux_threshold": "Lux level below which the light should be ON (hysteresis ±5 applied automatically).",
           "debounce_seconds": "How long the lux condition must persist before acting.",
           "polling_minutes": "Safety polling interval to verify and restore the desired state.",
@@ -35,7 +45,7 @@
       }
     },
     "abort": {
-      "already_configured": "This relay is already configured."
+      "already_configured": "This light is already configured."
     }
   },
   "entity": {

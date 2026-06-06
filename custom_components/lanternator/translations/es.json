@@ -5,10 +5,23 @@
         "title": "Configuración de Lanternator",
         "description": "Configura una automatización de farol de porche con control de luz ambiental.",
         "data": {
-          "relay": "Interruptor relé (opcional)",
           "light": "Bombilla inteligente",
           "lux_sensor": "Sensor de luminosidad",
           "override": "Anulación manual (input_boolean)",
+          "use_relay": "¿Usar un interruptor relé?"
+        },
+        "data_description": {
+          "light": "La bombilla inteligente gestionada por esta automatización.",
+          "lux_sensor": "Un sensor que proporciona la luminosidad ambiental en lux.",
+          "override": "Cuando está activado, la automatización está deshabilitada.",
+          "use_relay": "Activar si un relé controla la alimentación de la bombilla inteligente."
+        }
+      },
+      "params": {
+        "title": "Parámetros",
+        "description": "Configura umbrales, tiempos y ajustes opcionales de la bombilla.",
+        "data": {
+          "relay": "Interruptor relé",
           "lux_threshold": "Umbral de luminosidad (lux)",
           "debounce_seconds": "Tiempo antirrebote (segundos)",
           "polling_minutes": "Intervalo de verificación (minutos)",
@@ -19,10 +32,7 @@
           "rgb_color_b": "RGB Azul (0-255, opcional)"
         },
         "data_description": {
-          "relay": "Opcional: el interruptor que alimenta la bombilla inteligente. Dejar vacío si no se usa un relé.",
-          "light": "La bombilla inteligente gestionada por esta automatización.",
-          "lux_sensor": "Un sensor que proporciona la luminosidad ambiental en lux.",
-          "override": "Cuando está activado, la automatización está deshabilitada.",
+          "relay": "El interruptor que alimenta la bombilla inteligente.",
           "lux_threshold": "Nivel de lux por debajo del cual la luz debe encenderse (histéresis ±5 aplicada automáticamente).",
           "debounce_seconds": "Cuánto tiempo debe persistir la condición de lux antes de actuar.",
           "polling_minutes": "Intervalo de verificación de seguridad para verificar y restaurar el estado deseado.",
@@ -35,7 +45,7 @@
       }
     },
     "abort": {
-      "already_configured": "Este relé ya está configurado."
+      "already_configured": "Esta bombilla ya está configurada."
     }
   },
   "entity": {

@@ -5,10 +5,23 @@
         "title": "Lanternator Einrichtung",
         "description": "Konfigurieren Sie eine Veranda-Laternen-Automatisierung mit Umgebungslichtsteuerung.",
         "data": {
-          "relay": "Relais-Schalter (optional)",
           "light": "Smarte Glühbirne",
           "lux_sensor": "Helligkeitssensor",
           "override": "Manuelle Übersteuerung (input_boolean)",
+          "use_relay": "Relais-Schalter verwenden?"
+        },
+        "data_description": {
+          "light": "Die smarte Glühbirne, die von dieser Automatisierung gesteuert wird.",
+          "lux_sensor": "Ein Sensor, der die Umgebungshelligkeit in Lux misst.",
+          "override": "Wenn aktiviert, ist die Automatisierung deaktiviert.",
+          "use_relay": "Aktivieren, wenn ein Relais die Stromversorgung der smarten Glühbirne steuert."
+        }
+      },
+      "params": {
+        "title": "Parameter",
+        "description": "Konfigurieren Sie Schwellenwerte, Zeiten und optionale Glühbirneneinstellungen.",
+        "data": {
+          "relay": "Relais-Schalter",
           "lux_threshold": "Helligkeitsschwelle (Lux)",
           "debounce_seconds": "Entprellzeit (Sekunden)",
           "polling_minutes": "Abfrageintervall (Minuten)",
@@ -19,10 +32,7 @@
           "rgb_color_b": "RGB Blau (0-255, optional)"
         },
         "data_description": {
-          "relay": "Optional: der Schalter, der die smarte Glühbirne mit Strom versorgt. Leer lassen, wenn kein Relais verwendet wird.",
-          "light": "Die smarte Glühbirne, die von dieser Automatisierung gesteuert wird.",
-          "lux_sensor": "Ein Sensor, der die Umgebungshelligkeit in Lux misst.",
-          "override": "Wenn aktiviert, ist die Automatisierung deaktiviert.",
+          "relay": "Der Schalter, der die smarte Glühbirne mit Strom versorgt.",
           "lux_threshold": "Lux-Wert, unter dem das Licht eingeschaltet wird (Hysterese ±5 wird automatisch angewendet).",
           "debounce_seconds": "Wie lange die Lux-Bedingung bestehen muss, bevor reagiert wird.",
           "polling_minutes": "Sicherheitsabfrageintervall zur Überprüfung und Wiederherstellung des gewünschten Zustands.",
@@ -35,7 +45,7 @@
       }
     },
     "abort": {
-      "already_configured": "Dieses Relais ist bereits konfiguriert."
+      "already_configured": "Diese Glühbirne ist bereits konfiguriert."
     }
   },
   "entity": {

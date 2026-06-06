@@ -5,10 +5,23 @@
         "title": "Configuration Lanternator",
         "description": "Configurez une automatisation de lanterne de porche avec contrôle de luminosité ambiante.",
         "data": {
-          "relay": "Interrupteur relais (optionnel)",
           "light": "Ampoule connectée",
           "lux_sensor": "Capteur de luminosité",
           "override": "Forçage manuel (input_boolean)",
+          "use_relay": "Utiliser un interrupteur relais ?"
+        },
+        "data_description": {
+          "light": "L'ampoule connectée gérée par cette automatisation.",
+          "lux_sensor": "Un capteur fournissant la luminosité ambiante en lux.",
+          "override": "Quand activé, l'automatisation est désactivée.",
+          "use_relay": "Activer si un relais contrôle l'alimentation de l'ampoule connectée."
+        }
+      },
+      "params": {
+        "title": "Paramètres",
+        "description": "Configurez les seuils, les délais et les réglages optionnels de l'ampoule.",
+        "data": {
+          "relay": "Interrupteur relais",
           "lux_threshold": "Seuil de luminosité (lux)",
           "debounce_seconds": "Temps anti-rebond (secondes)",
           "polling_minutes": "Intervalle de vérification (minutes)",
@@ -19,10 +32,7 @@
           "rgb_color_b": "RGB Bleu (0-255, optionnel)"
         },
         "data_description": {
-          "relay": "Optionnel : l'interrupteur qui alimente l'ampoule connectée. Laisser vide si aucun relais n'est utilisé.",
-          "light": "L'ampoule connectée gérée par cette automatisation.",
-          "lux_sensor": "Un capteur fournissant la luminosité ambiante en lux.",
-          "override": "Quand activé, l'automatisation est désactivée.",
+          "relay": "L'interrupteur qui alimente l'ampoule connectée.",
           "lux_threshold": "Niveau de lux en dessous duquel la lumière doit s'allumer (hystérésis ±5 appliquée automatiquement).",
           "debounce_seconds": "Durée pendant laquelle la condition de lux doit persister avant d'agir.",
           "polling_minutes": "Intervalle de vérification de sécurité pour vérifier et restaurer l'état souhaité.",
@@ -35,7 +45,7 @@
       }
     },
     "abort": {
-      "already_configured": "Ce relais est déjà configuré."
+      "already_configured": "Cette ampoule est déjà configurée."
     }
   },
   "entity": {
